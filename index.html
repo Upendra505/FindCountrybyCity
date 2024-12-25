@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Country by City</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: azure;
+        }
+        
+        input {
+            background-color: azure;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Find Country by City</h1>
+    <label for="name">Enter City Name:</label>
+    <input type="text" id="name">
+    <button type="button" onclick="loadDoc()">Get Country</button>
+
+    <div id="demo">
+        <!-- The result will be displayed here -->
+    </div>
+
+    <script>
+        function loadDoc() {
+            let cityName = document.getElementById("name").value.trim();
+            if (!cityName) {
+                document.getElementById("demo").innerHTML = "Please enter a city name.";
+                return;
+            }
+
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function() {
+                if (this.status === 200) {
+                    const response = JSON.parse(this.responseText);
+                    const cities = response.data;
+                    let countryFound = false;
+
+                    // Search through the cities to find the matching one
+                    for (let i = 0; i < cities.length; i++) {
+                        if (cities[i].city.toLowerCase() === cityName.toLowerCase()) {
+                            document.getElementById("demo").innerHTML =
+                                `City: ${cities[i].city}<br>Country: ${cities[i].country}`;
+                            countryFound = true;
+                            break;
+                        }
+                    }
+
+                    if (!countryFound) {
+                        document.getElementById("demo").innerHTML =
+                            `City: ${cityName} not found. Please try another city.`;
+                    }
+                } else {
+                    document.getElementById("demo").innerHTML =
+                        "Error fetching data. Please try again.";
+                }
+            };
+
+            // Call the API to fetch all cities (you may want to optimize this if the API supports more specific queries)
+            xhttp.open("GET", "https://countriesnow.space/api/v0.1/countries/population/cities", true);
+            xhttp.send();
+        }
+    </script>
+</body>
+
+</html>
